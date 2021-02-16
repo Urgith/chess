@@ -80,7 +80,21 @@ class Gra:
             pygame.draw.rect(self.okno, (0, 0, 255), (100*self.kliknieta[0], 100*self.kliknieta[1], 100, 100))
 
             for ruch in self.mozliwe_ruchy(self.pola[self.kliknieta], False, self.kliknieta):
-                pygame.draw.rect(self.okno, (255, 255, 0), (100*ruch[0], 100*ruch[1], 100, 100))
+                temp = [self.pola[self.kliknieta]]
+                if ruch in self.pola:
+                    temp.append(self.pola[ruch])
+
+                self.pola[ruch] = temp[0]
+                del self.pola[self.kliknieta]
+
+                if not self.szach():
+                    pygame.draw.rect(self.okno, (255, 255, 0), (100*ruch[0], 100*ruch[1], 100, 100))
+
+                self.pola[self.kliknieta] = temp[0]
+                if len(temp) == 2:
+                    self.pola[ruch] = temp[1]
+                else:
+                    del self.pola[ruch]
 
         for pole in self.pola:
             self.okno.blit(self.font.render(self.symbol[self.pola[pole]], True, (0, 0, 0)), (100*pole[0] + 20, 100*pole[1] - 20))
@@ -120,9 +134,8 @@ class Gra:
         new = (new[0] // 100, new[1] // 100)
         kliknieta = self.kliknieta
 
-        if new in self.mozliwe_ruchy(self.pola[kliknieta]):
+        if new in self.mozliwe_ruchy(self.pola[kliknieta], False):
             flag_1 = True
-            flag_2 = False
 
             ruszono_o_2 = None
             if self.ruszono_o_2:
@@ -170,12 +183,7 @@ class Gra:
 
                     self.poprzednie_ruchy[-1][4] = [helper[help][0], helper[help][1], helper[help][4], helper[help][3], helper[help][6]]
 
-            elif self.tura % 2 == 1:
-                flag_2 = self.pola[new].islower()
             else:
-                flag_2 = self.pola[new].isupper()
-
-            if flag_2:
                 temp = (self.ostatni, self.pola[new])
                 self.ostatni = (kliknieta, new)
 
@@ -195,10 +203,6 @@ class Gra:
                 else:
                     self.poprzednie_ruchy.append([kliknieta, new, poped, (temp[1], None, temp[0]), None, None, ruszono_o_2])
 
-            elif flag_1:
-                self.kliknieta = None
-                return False
-
             if poped in ('k', 'K', 'w', 'W'):
                 for i, figura in enumerate(self.krolowie_i_wieze):
                     if figura == kliknieta:
@@ -216,44 +220,62 @@ class Gra:
         self.promocja()
         return False
 
-    def mozliwe_ruchy_wiezy(self, x, y, ruchy, tryb=True):
+    def mozliwe_ruchy_wiezy(self, x, y, ruchy, tryb):
         elements_1 = [0, 0, 1, 1, 7, 0, 7, 0]
         elements_2 = [0, -1, 0, 1, 1, -1, 1, 1]
         elements_3 = [0, 3, 0, 3, 2, 1, 2, 1]
+        figura = self.pola[(x, y)]
 
         for i in range(4):
             x1, y1 = x, y
             helper = [x1, y1, x, y]
 
-            while helper[elements_1[i]] in [1, 2, 3, 4, 5, 6] + [elements_1[i + 4]]:
+            while True:
                 helper[elements_2[2*i]] += elements_2[2*i + 1]
+
+                if not 0 <= helper[elements_1[i]] <= 7:
+                    break
 
                 ruchy.append((helper[elements_3[2*i]], helper[elements_3[2*i + 1]]))
                 if (helper[elements_3[2*i]], helper[elements_3[2*i + 1]]) in self.pola:
-                    if tryb and self.pola[(helper[elements_3[2*i]], helper[elements_3[2*i + 1]])] in ('k', 'K'):
+                    help = (helper[elements_3[2*i]], helper[elements_3[2*i + 1]])
+
+                    if (self.pola[help].islower() and figura.islower()) or (self.pola[help].isupper() and figura.isupper()):
+                        ruchy.pop()
+
+                    if tryb and self.pola[help] in ('k', 'K'):
                         continue
+
                     break
 
-    def mozliwe_ruchy_gonca(self, x, y, ruchy, tryb=True):
+    def mozliwe_ruchy_gonca(self, x, y, ruchy, tryb):
         elements = [7, 7, 0, 0, 7, 0, 0, 7, -1, -1, 1, 1, -1, 1, 1, -1]
+        figura = self.pola[(x, y)]
 
         for i in range(4):
             x1, y1 = x, y
 
-            while x1 in [1, 2, 3, 4, 5, 6] + [elements[2*i]] and y1 in [1, 2, 3, 4, 5, 6] + [elements[2*i + 1]]:
+            while True:
                 x1 += elements[2*i + 8]
                 y1 += elements[2*i + 9]
 
+                if not 0 <= x1 <= 7 or not 0 <= y1 <= 7:
+                    break
+
                 ruchy.append((x1, y1))
                 if (x1, y1) in self.pola:
+                    if (self.pola[(x1, y1)].islower() and figura.islower()) or (self.pola[(x1, y1)].isupper() and figura.isupper()):
+                        ruchy.pop()
+
                     if tryb and self.pola[(x1, y1)] in ('k', 'K'):
                         continue
+
                     break
 
     def mozliwe_ruchy_krola(self, krol):
         x, y = krol
         ruchy = ((x-1, y-1), (x, y-1), (x+1, y-1), (x+1, y), (x+1, y+1), (x, y+1), (x-1, y+1), (x-1, y))
-        return [ruch for ruch in ruchy if 0 <= ruch[0] <= 7 and 0 <= ruch[1] <= 7]
+        return [ruch for ruch in ruchy if 0 <= ruch[0] <= 7 and 0 <= ruch[1] <= 7 and (ruch not in self.pola or ((self.pola[ruch].islower() and self.pola[krol] == 'K') or (self.pola[ruch].isupper() and self.pola[krol] == 'k')))]
 
     def mozliwe_ruchy(self, figura, tryb=True, kliknieta=None):
         if kliknieta is None:
@@ -270,9 +292,17 @@ class Gra:
             if y == helper[figura][1] and (x, helper[figura][2]) not in self.pola and (x, helper[figura][3]) not in self.pola:
                 ruchy.append((x, helper[figura][3]))
             if (x-1, y + helper[figura][0]) in self.pola:
-                ruchy.append((x-1, y + helper[figura][0]))
+
+                help = {'p': self.pola[(x-1, y + helper[figura][0])].isupper(), 'P': self.pola[(x-1, y + helper[figura][0])].islower()}
+                if help[figura]:
+                    ruchy.append((x-1, y + helper[figura][0]))
+
             if (x+1, y + helper[figura][0]) in self.pola:
-                ruchy.append((x+1, y + helper[figura][0]))
+
+                help = {'p': self.pola[(x+1, y + helper[figura][0])].isupper(), 'P': self.pola[(x+1, y + helper[figura][0])].islower()}
+                if help[figura]:
+                    ruchy.append((x+1, y + helper[figura][0]))
+
             if self.ruszono_o_2 and y == self.ruszono_o_2[1] and (x == self.ruszono_o_2[0] + 1 or x == self.ruszono_o_2[0] - 1):
                 ruchy.append((self.ruszono_o_2[0], self.ruszono_o_2[1] + helper[figura][0]))
 
@@ -284,7 +314,7 @@ class Gra:
 
         elif figura == 's' or figura == 'S':
             ruchy = ((x-2, y-1), (x-1, y-2), (x+1, y-2), (x+2, y-1), (x+2, y+1), (x+1, y+2), (x-1, y+2), (x-2, y+1))
-            return [ruch for ruch in ruchy if 0 <= ruch[0] <= 7 and 0 <= ruch[1] <= 7]
+            return [ruch for ruch in ruchy if 0 <= ruch[0] <= 7 and 0 <= ruch[1] <= 7 and (ruch not in self.pola or ((self.pola[ruch].islower() and figura == 'S') or (self.pola[ruch].isupper() and figura == 's')))]
 
         elif figura == 'g' or figura == 'G':
             self.mozliwe_ruchy_gonca(x, y, ruchy, tryb)
