@@ -1,4 +1,5 @@
 import pygame
+import os
 
 
 def quit():
@@ -10,15 +11,32 @@ def quit():
 class Gra:
 
     def __init__(self):
-        self.pola = {(0, 7): 'W', (1, 7): 'S', (2, 7): 'G', (3, 7): 'H', (4, 7): 'K', (5, 7): 'G', (6, 7): 'S', (7, 7): 'W', (0, 6): 'P', (1, 6): 'P', (2, 6): 'P', (3, 6): 'P', (4, 6): 'P', (5, 6): 'P', (6, 6): 'P', (7, 6): 'P', (0, 0): 'w', (1, 0): 's', (2, 0): 'g', (3, 0): 'h', (4, 0): 'k', (5, 0): 'g', (6, 0): 's', (7, 0): 'w', (0, 1): 'p', (1, 1): 'p', (2, 1): 'p', (3, 1): 'p', (4, 1): 'p', (5, 1): 'p', (6, 1): 'p', (7, 1): 'p'}
-        self.symbol = {'W': '\u2656', 'S': '\u2658', 'G': '\u2657', 'H': '\u2655', 'K': '\u2654', 'P': '\u2659', 'w': '\u265C', 's': '\u265E', 'g': '\u265D', 'h': '\u265B', 'k': '\u265A', 'p': '\u265F'}
+        self.pola = {
+            (0, 7): 'W', (1, 7): 'S', (2, 7): 'G', (3, 7): 'H', (4, 7): 'K',
+            (5, 7): 'G', (6, 7): 'S', (7, 7): 'W', (0, 6): 'P', (1, 6): 'P',
+            (2, 6): 'P', (3, 6): 'P', (4, 6): 'P', (5, 6): 'P', (6, 6): 'P',
+            (7, 6): 'P', (0, 0): 'w', (1, 0): 's', (2, 0): 'g', (3, 0): 'h',
+            (4, 0): 'k', (5, 0): 'g', (6, 0): 's', (7, 0): 'w', (0, 1): 'p',
+            (1, 1): 'p', (2, 1): 'p', (3, 1): 'p', (4, 1): 'p', (5, 1): 'p',
+            (6, 1): 'p', (7, 1): 'p'
+        }
+
+        self.symbol = {
+            'W': '\u2656', 'S': '\u2658', 'G': '\u2657', 'H': '\u2655',
+            'K': '\u2654', 'P': '\u2659', 'w': '\u265C', 's': '\u265E',
+            'g': '\u265D', 'h': '\u265B', 'k': '\u265A', 'p': '\u265F'
+        }
+
         self.wszystkie_figury = [list('HhWWwwGGggSSssPPPPPPPPpppppppp'), []]
 
         self.font = pygame.font.Font('DejaVu Sans Mono 400.ttf', 100)
         self.okno = pygame.display.set_mode((950, 800))
 
-        self.krolowie_i_wieze = [(4, 7), (0, 7), (7, 7), (4, 0), (0, 0), (7, 0)]
+        self.krolowie_i_wieze = [
+            (4, 7), (0, 7), (7, 7), (4, 0), (0, 0), (7, 0)
+        ]
         self.mozliwosci_roszady = [0, 0, 0, 0, 0, 0]
+
         self.poprzednie_ruchy = []
 
         self.ruszono_o_2 = None
@@ -640,6 +658,8 @@ class Gra:
                 elif event.type == pygame.QUIT:
                     quit()
 
+
+os.environ['SDL_VIDEO_WINDOW_POS'] = '300, 25'
 
 pygame.display.set_mode()
 pygame.display.set_caption('Szachy')
