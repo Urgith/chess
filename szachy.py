@@ -4,6 +4,7 @@ import os
 
 def quit():
     import sys
+
     pygame.quit()
     sys.exit(0)
 
@@ -29,7 +30,14 @@ class Gra:
 
         self.wszystkie_figury = [list('HhWWwwGGggSSssPPPPPPPPpppppppp'), []]
 
-        self.font = pygame.font.Font('DejaVu Sans Mono 400.ttf', 100)
+        font = 'DejaVu Sans Mono 400.ttf'
+        self.font22 = pygame.font.Font(font, 22)
+        self.font25 = pygame.font.Font(font, 25)
+        self.font30 = pygame.font.Font(font, 30)
+        self.font40 = pygame.font.Font(font, 40)
+        self.font50 = pygame.font.Font(font, 50)
+        self.font100 = pygame.font.Font(font, 100)
+
         self.okno = pygame.display.set_mode((950, 800))
 
         self.krolowie_i_wieze = [
@@ -63,11 +71,11 @@ class Gra:
         self.przycisk_poddaj_sie.y += 600*(self.tura % 2)
         self.przycisk_remis.y += 700*(self.tura % 2)
 
-        runda = pygame.font.Font('DejaVu Sans Mono 400.ttf', 30).render('{}'.format(self.tura - 1), True, (255, 255, 255))
-        poddaj_sie = pygame.font.Font('DejaVu Sans Mono 400.ttf', 22).render('Poddaj się', True, (255, 255, 255))
-        nowa_gra = pygame.font.Font('DejaVu Sans Mono 400.ttf', 25).render('Nowa gra', True, (255, 255, 255))
-        cofnij = pygame.font.Font('DejaVu Sans Mono 400.ttf', 25).render('Cofnij', True, (255, 255, 255))
-        remis = pygame.font.Font('DejaVu Sans Mono 400.ttf', 22).render('Remis?', True, (255, 255, 255))
+        runda = self.font30.render('{}'.format(self.tura - 1), True, (255, 255, 255))
+        poddaj_sie = self.font22.render('Poddaj się', True, (255, 255, 255))
+        nowa_gra = self.font25.render('Nowa gra', True, (255, 255, 255))
+        cofnij = self.font25.render('Cofnij', True, (255, 255, 255))
+        remis = self.font22.render('Remis?', True, (255, 255, 255))
 
         self.okno.blit(runda, (865, 385))
 
@@ -115,11 +123,10 @@ class Gra:
                     del self.pola[ruch]
 
         for pole in self.pola:
-            self.okno.blit(self.font.render(self.symbol[self.pola[pole]], True, (0, 0, 0)), (100*pole[0] + 20, 100*pole[1] - 20))
+            self.okno.blit(self.font100.render(self.symbol[self.pola[pole]], True, (0, 0, 0)), (100*pole[0] + 20, 100*pole[1] - 20))
 
     def rysowanie_zbitych(self):
         wszystkie_figury = self.wszystkie_figury[0][:]
-        font = pygame.font.Font('DejaVu Sans Mono 400.ttf', 50)
 
         for pole in self.pola:
             if self.pola[pole] not in ('k', 'K'):
@@ -129,10 +136,10 @@ class Gra:
         pozycja_lower = 0
         for zbita in wszystkie_figury:
             if zbita.isupper():
-                self.okno.blit(font.render(self.symbol[zbita], True, (0, 0, 0)), (800 + 40*(pozycja_upper // 200), 110 + pozycja_upper % 200))
+                self.okno.blit(self.font50.render(self.symbol[zbita], True, (0, 0, 0)), (800 + 40*(pozycja_upper // 200), 110 + pozycja_upper % 200))
                 pozycja_upper += 40
             else:
-                self.okno.blit(font.render(self.symbol[zbita], True, (0, 0, 0)), (800 + 40*(pozycja_lower // 200), 460 + pozycja_lower % 200))
+                self.okno.blit(self.font50.render(self.symbol[zbita], True, (0, 0, 0)), (800 + 40*(pozycja_lower // 200), 460 + pozycja_lower % 200))
                 pozycja_lower += 40
 
     def rysowanie(self, mode=None):
@@ -409,7 +416,7 @@ class Gra:
 
         pygame.draw.rect(self.okno, (255, 255, 0), (200, 350, 400, 100))
         for i in range(4):
-            self.okno.blit(self.font.render(self.symbol[figures[i]], True, (0, 0, 0)), (100*i + 220, 340))
+            self.okno.blit(self.font100.render(self.symbol[figures[i]], True, (0, 0, 0)), (100*i + 220, 340))
         pygame.display.update()
 
         while True:
@@ -620,7 +627,7 @@ class Gra:
 
         self.rysowanie('decyzja')
         pygame.draw.rect(self.okno, (0, 255, 0), pygame.Rect(200, 350, 400, 100))
-        self.okno.blit(pygame.font.Font('DejaVu Sans Mono 400.ttf', 40).render(napis, True, (255, 255, 255)), (dlugosc, 375))
+        self.okno.blit(self.font40.render(napis, True, (255, 255, 255)), (dlugosc, 375))
         pygame.display.update()
 
         while True:
@@ -641,8 +648,8 @@ class Gra:
 
         pygame.draw.rect(self.okno, (150, 75, 0), self.przycisk_zgoda_remis)
         pygame.draw.rect(self.okno, (150, 75, 0), self.przycisk_gramy_dalej)
-        self.okno.blit(pygame.font.Font('DejaVu Sans Mono 400.ttf', 22).render('Gramy dalej', True, (255, 255, 255)), (805, self.przycisk_gramy_dalej.y + 5))
-        self.okno.blit(pygame.font.Font('DejaVu Sans Mono 400.ttf', 22).render('Remis', True, (255, 255, 255)), (840, self.przycisk_zgoda_remis.y + 5))
+        self.okno.blit(self.font22.render('Gramy dalej', True, (255, 255, 255)), (805, self.przycisk_gramy_dalej.y + 5))
+        self.okno.blit(self.font22.render('Remis', True, (255, 255, 255)), (840, self.przycisk_zgoda_remis.y + 5))
         pygame.display.update()
 
         while True:
