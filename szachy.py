@@ -352,7 +352,7 @@ class Gra:
                 if figura == elements[i] and self.mozliwosci_roszady[3 - 3*i] == 0:
                     for j in range(2):
                         if self.mozliwosci_roszady[4 - 3*i + j] == 0:
-                            for k in range(5 - j):
+                            for k in range(2 - 2*j, 5 - 3*j):
                                 if not free:
                                     break
 
