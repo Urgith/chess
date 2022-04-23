@@ -31,6 +31,7 @@ class Gra:
         self.wszystkie_figury = [list('HhWWwwGGggSSssPPPPPPPPpppppppp'), []]
 
         font = 'DejaVu Sans Mono 400.ttf'
+        pygame.font.init()
         self.font22 = pygame.font.Font(font, 22)
         self.font25 = pygame.font.Font(font, 25)
         self.font30 = pygame.font.Font(font, 30)
@@ -666,11 +667,9 @@ class Gra:
                     quit()
 
 
-os.environ['SDL_VIDEO_WINDOW_POS'] = '300, 25'
-
-pygame.display.set_mode()
+os.environ['SDL_VIDEO_CENTERED'] = '1'
+pygame.display.set_mode((950, 800))
 pygame.display.set_caption('Szachy')
-pygame.font.init()
 
 gra = Gra()
 
